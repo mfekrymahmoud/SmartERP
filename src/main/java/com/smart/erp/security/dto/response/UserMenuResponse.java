@@ -1,6 +1,8 @@
 package com.smart.erp.security.dto.response;
 
 import lombok.Data;
+import java.util.List;
+import java.util.ArrayList;
 
 @Data
 public class UserMenuResponse {
@@ -19,60 +21,6 @@ public class UserMenuResponse {
     private String functionDescriptionAr;
     private String functionDescriptionEn;
 
-    // Manual setters if Lombok fails
-    public void setUserId(Long userId) {
-        this.userId = userId;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
-
-    public void setMenuId(Long menuId) {
-        this.menuId = menuId;
-    }
-
-    public void setMenuDescriptionAr(String menuDescriptionAr) {
-        this.menuDescriptionAr = menuDescriptionAr;
-    }
-
-    public void setMenuDescriptionEn(String menuDescriptionEn) {
-        this.menuDescriptionEn = menuDescriptionEn;
-    }
-
-    public void setParentMenuId(Long parentMenuId) {
-        this.parentMenuId = parentMenuId;
-    }
-
-    public void setMenuOrder(Integer menuOrder) {
-        this.menuOrder = menuOrder;
-    }
-
-    public void setIcon(String icon) {
-        this.icon = icon;
-    }
-
-    public void setRoutePath(String routePath) {
-        this.routePath = routePath;
-    }
-
-    public void setAccessType(String accessType) {
-        this.accessType = accessType;
-    }
-
-    public void setFunctionId(Long functionId) {
-        this.functionId = functionId;
-    }
-
-    public void setFunctionCode(String functionCode) {
-        this.functionCode = functionCode;
-    }
-
-    public void setFunctionDescriptionAr(String functionDescriptionAr) {
-        this.functionDescriptionAr = functionDescriptionAr;
-    }
-
-    public void setFunctionDescriptionEn(String functionDescriptionEn) {
-        this.functionDescriptionEn = functionDescriptionEn;
-    }
+    // Advice: Add children list for tree structure support
+    private List<UserMenuResponse> children = new ArrayList<>();
 }

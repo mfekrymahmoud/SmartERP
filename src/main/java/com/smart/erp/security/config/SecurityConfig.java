@@ -1,6 +1,7 @@
 package com.smart.erp.security.config;
 
 import com.smart.erp.security.filter.JwtAuthenticationFilter;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
