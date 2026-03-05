@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -36,35 +37,34 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/auth/**",
                                 "/public/**",
-                                "/swagger-ui/**",        // Swagger UI
-                                "/swagger-ui.html",      // Swagger UI HTML
-                                "/api-docs/**",          // OpenAPI docs (MISSING?)
-                                "/v3/api-docs/**",       // OpenAPI v3
-                                "/swagger-resources/**", // Swagger resources
-                                "/webjars/**"            // Webjars
+                                "/swagger-ui/**",
+                                "/swagger-ui.html",
+                                "/api-docs/**",     // Advice: Specifically permit doc paths
+                                "/v3/api-docs/**",
+                                "/webjars/**"
                         ).permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
-                .authenticationProvider(authenticationProvider())
+                // Advice: The AuthenticationManager now handles the provider internally
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
 
     @Bean
-    public AuthenticationProvider authenticationProvider() {
+    public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
+        AuthenticationManagerBuilder authenticationManagerBuilder =
+                http.getSharedObject(AuthenticationManagerBuilder.class);
+
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
         authProvider.setUserDetailsService(userDetailsService);
         authProvider.setPasswordEncoder(passwordEncoder());
-        return authProvider;
-    }
 
-    @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
-        return config.getAuthenticationManager();
+        authenticationManagerBuilder.authenticationProvider(authProvider);
+        return authenticationManagerBuilder.build();
     }
 
     @Bean
