@@ -39,6 +39,7 @@
 			<artifactId>spring-boot-starter-validation</artifactId>
 		</dependency>
 
+		<!-- JWT -->
 		<dependency>
 			<groupId>io.jsonwebtoken</groupId>
 			<artifactId>jjwt-api</artifactId>
@@ -57,6 +58,7 @@
 			<scope>runtime</scope>
 		</dependency>
 
+		<!-- Oracle DB -->
 		<dependency>
 			<groupId>com.oracle.database.jdbc</groupId>
 			<artifactId>ojdbc11</artifactId>
@@ -68,24 +70,32 @@
 			<version>21.9.0.0</version>
 		</dependency>
 
+		<!--
+			Springdoc OpenAPI v2 — compatible with Spring Boot 3.x (Jakarta EE).
+			FIX: Upgraded from 2.3.0 to 2.8.5 for best Spring Boot 3.4.x compatibility.
+			DO NOT use springdoc-openapi-ui (v1) — that is for Spring Boot 2.x only.
+		-->
 		<dependency>
 			<groupId>org.springdoc</groupId>
 			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-			<version>2.3.0</version>
+			<version>2.8.5</version>
 		</dependency>
 
+		<!-- Lombok -->
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
 			<optional>true</optional>
 		</dependency>
 
+		<!-- MapStruct -->
 		<dependency>
 			<groupId>org.mapstruct</groupId>
 			<artifactId>mapstruct</artifactId>
 			<version>${mapstruct.version}</version>
 		</dependency>
 
+		<!-- Test -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
@@ -108,6 +118,14 @@
 				</configuration>
 			</plugin>
 
+			<!--
+				FIX: Removed duplicate maven-compiler-plugin declaration.
+				Having two <plugin> blocks with the same groupId:artifactId causes
+				Maven to silently ignore one, which can break annotation processing
+				(Lombok + MapStruct).
+				The annotationProcessorPaths order matters: mapstruct-processor must
+				come AFTER lombok so Lombok-generated code is visible to MapStruct.
+			-->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -116,11 +134,7 @@
 					<source>${java.version}</source>
 					<target>${java.version}</target>
 					<annotationProcessorPaths>
-						<path>
-							<groupId>org.mapstruct</groupId>
-							<artifactId>mapstruct-processor</artifactId>
-							<version>${mapstruct.version}</version>
-						</path>
+						<!-- Lombok FIRST so its generated code is available to MapStruct -->
 						<path>
 							<groupId>org.projectlombok</groupId>
 							<artifactId>lombok</artifactId>
@@ -131,30 +145,11 @@
 							<artifactId>lombok-mapstruct-binding</artifactId>
 							<version>${lombok-mapstruct-binding.version}</version>
 						</path>
-					</annotationProcessorPaths>
-				</configuration>
-			</plugin>
-
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.11.0</version>
-				<configuration>
-					<annotationProcessorPaths>
+						<!-- MapStruct AFTER Lombok -->
 						<path>
 							<groupId>org.mapstruct</groupId>
 							<artifactId>mapstruct-processor</artifactId>
 							<version>${mapstruct.version}</version>
-						</path>
-						<path>
-							<groupId>org.projectlombok</groupId>
-							<artifactId>lombok</artifactId>
-							<version>${lombok.version}</version>
-						</path>
-						<path>
-							<groupId>org.projectlombok</groupId>
-							<artifactId>lombok-mapstruct-binding</artifactId>
-							<version>${lombok-mapstruct-binding.version}</version>
 						</path>
 					</annotationProcessorPaths>
 				</configuration>
