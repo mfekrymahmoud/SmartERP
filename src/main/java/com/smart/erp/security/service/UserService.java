@@ -55,10 +55,9 @@ public class UserService {
         return userMapper.toResponse(userRepository.save(user));
     }
 
-    // UserService.java
     @Transactional(readOnly = true)
     public UserResponse getUserById(Long id) {
-        // Advice: Use findByIdView to stay consistent with your native SQL/View pattern
+        // Uses the native view pattern we established for Oracle
         User user = userRepository.findByIdView(id)
                 .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
         return userMapper.toResponse(user);

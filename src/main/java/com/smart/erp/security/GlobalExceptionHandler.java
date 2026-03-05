@@ -1,4 +1,4 @@
-package com.smart.erp.security.exception;
+package com.smart.erp.security;
 
 import com.smart.erp.security.dto.ApiResponse;
 import org.springframework.http.HttpStatus;
