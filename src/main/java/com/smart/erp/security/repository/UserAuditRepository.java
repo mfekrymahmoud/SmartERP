@@ -1,6 +1,7 @@
 package com.smart.erp.security.repository;
 
 import com.smart.erp.security.model.UserAudit;
+import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -17,6 +18,7 @@ public interface UserAuditRepository extends JpaRepository<UserAudit, Long> {
     Optional<UserAudit> findLastActiveSession(@Param("userId") Long userId);
 
     @Modifying
+    @Transactional
     @Query(value = "UPDATE FND_USER_AUDIT SET LOGOUT_DATE_TIME = :logoutTime WHERE AUDIT_ID = :auditId", nativeQuery = true)
     void updateLogoutTime(@Param("auditId") Long auditId, @Param("logoutTime") LocalDateTime logoutTime);
 }

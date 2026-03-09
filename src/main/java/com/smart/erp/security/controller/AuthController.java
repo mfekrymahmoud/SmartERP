@@ -16,6 +16,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -67,16 +68,28 @@ public class AuthController {
         return ResponseEntity.ok(ApiResponse.success("Login successful", response));
     }
 
+    @Transactional
     @PostMapping("/logout")
-    public ResponseEntity<ApiResponse<Void>> logout(@RequestHeader("Authorization") String token) {
-        // Extract username and find audit record
-        String username = jwtService.extractUsername(token.substring(7));
-        User user = userRepository.findByUserName(username)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+    public ResponseEntity<ApiResponse<Void>> logout(
+            @RequestHeader(value = "Authorization", required = false) String authHeader) {
 
-        userAuditRepository.findLastActiveSession(user.getUserId()).ifPresent(audit -> {
-            userAuditRepository.updateLogoutTime(audit.getAuditId(), LocalDateTime.now());
-        });
+        // Guard: return 400 if header is missing or malformed instead of NullPointerException
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return ResponseEntity.badRequest()
+                    .body(ApiResponse.error( "Missing or invalid Authorization header",400));
+        }
+
+        // Extract username and find audit record
+        String token = authHeader.substring(7);
+        String username = jwtService.extractUsername(token);
+
+        User user = userRepository.findByUserName(username)
+                .orElseThrow(() -> new RuntimeException("User not found: " + username));
+
+        // Update logout time in audit table
+        userAuditRepository.findLastActiveSession(user.getUserId()).ifPresent(audit ->
+                userAuditRepository.updateLogoutTime(audit.getAuditId(), LocalDateTime.now())
+        );
 
         return ResponseEntity.ok(ApiResponse.success("Logout successful", null));
     }
